@@ -1,346 +1,391 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Database, 
-  Cpu, 
-  Terminal, 
-  Github, 
-  Linkedin, 
-  Mail, 
-  ShieldCheck, 
-  Zap, 
-  FlaskConical, 
-  Binary, 
-  X,
-  ChevronRight,
-  Maximize2,
-  Dna,
-  Fingerprint,
-  Award,
-  BookOpen,
-  GraduationCap,
-  Layout
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thunga Suhys | Portfolio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React and Babel for single-file execution -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons (Specific stable version for UMD) -->
+    <script src="https://unpkg.com/lucide-react@0.344.0/dist/umd/lucide-react.js"></script>
 
-// --- Custom Cursor Component ---
-const BioCursor = () => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020205;
+            color: #e2e8f0;
+            margin: 0;
+            overflow-x: hidden;
+            cursor: none; /* Hide default cursor for the custom bio-cursor */
+        }
 
-  useEffect(() => {
-    const updateCursor = (e) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-    };
-    const handleOver = (e) => {
-      if (e.target.closest('button') || e.target.closest('a')) setIsHovering(true);
-      else setIsHovering(false);
-    };
-    window.addEventListener('mousemove', updateCursor);
-    window.addEventListener('mouseover', handleOver);
-    return () => {
-      window.removeEventListener('mousemove', updateCursor);
-      window.removeEventListener('mouseover', handleOver);
-    };
-  }, []);
-
-  return (
-    <div 
-      className="fixed pointer-events-none z-[9999] transition-transform duration-200 ease-out flex items-center justify-center"
-      style={{ left: position.x, top: position.y, transform: `translate(-50%, -50%) scale(${isHovering ? 1.5 : 1})` }}
-    >
-      <div className={`w-8 h-8 border-2 rounded-full flex items-center justify-center ${isHovering ? 'border-pink-500 bg-pink-500/10' : 'border-white/20'}`}>
-        <div className={`w-1 h-1 rounded-full ${isHovering ? 'bg-pink-500' : 'bg-white/40'}`} />
-      </div>
-      <div className={`absolute w-12 h-12 border-t-2 border-l-2 rounded-tl-xl transition-all ${isHovering ? 'border-green-500 -translate-x-2 -translate-y-2' : 'border-transparent'}`} />
-    </div>
-  );
-};
-
-// --- Animated 3D-ish DNA Helix Component ---
-const BackgroundHelix = () => {
-  const [nodes, setNodes] = useState([]);
-
-  useEffect(() => {
-    const newNodes = Array.from({ length: 40 }).map((_, i) => ({
-      id: i,
-      phase: (i * 0.5),
-      y: i * 4,
-    }));
-    setNodes(newNodes);
-  }, []);
-
-  return (
-    <div className="fixed inset-0 pointer-events-none opacity-20 z-0 flex justify-center">
-      <div className="relative w-64 h-full">
-        {nodes.map((node) => (
-          <React.Fragment key={node.id}>
-            <div 
-              className="absolute w-2 h-2 rounded-full bg-pink-500 shadow-[0_0_10px_#ec4899]"
-              style={{ 
-                top: `${node.y}%`, 
-                left: `${50 + Math.sin(node.phase + Date.now() * 0.001) * 40}%`,
-                opacity: (Math.cos(node.phase + Date.now() * 0.001) + 1) / 2
-              }}
-            />
-            <div 
-              className="absolute w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"
-              style={{ 
-                top: `${node.y}%`, 
-                left: `${50 - Math.sin(node.phase + Date.now() * 0.001) * 40}%`,
-                opacity: (Math.sin(node.phase + Date.now() * 0.001) + 1) / 2
-              }}
-            />
-            <div 
-              className="absolute h-px bg-white/10"
-              style={{ 
-                top: `${node.y + 0.5}%`,
-                left: `${50 - Math.sin(node.phase + Date.now() * 0.001) * 40}%`,
-                width: `${Math.abs(Math.sin(node.phase + Date.now() * 0.001) * 80)}%`
-              }}
-            />
-          </React.Fragment>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const App = () => {
-  const [activeGene, setActiveGene] = useState(null);
-  const [terminalLines, setTerminalLines] = useState([]);
-
-  useEffect(() => {
-    const lines = [
-      "SEQ_BOOT: SUCCESS",
-      "NIT_RAIPUR: B.TECH BIOTECH",
-      "CORE_CGPA: 9.09",
-      "HPC_NODE: IIT_ROORKEE_LINKED",
-      "PUB_SYNC: MASS_GATHERING_MED_2025"
-    ];
-    let i = 0;
-    const interval = setInterval(() => {
-      if (i < lines.length) {
-        setTerminalLines(prev => [...prev, lines[i]]);
-        i++;
-      }
-    }, 400);
-    return () => clearInterval(interval);
-  }, []);
-
-  const data = {
-    experience: [
-      { 
-        title: "IIT Roorkee", 
-        sub: "Summer Research Intern (May 2025 - June 2025)", 
-        details: [
-          "Performed bioinformatics analyses including BLAST searches, single-cell RNA-seq clustering with Seurat, and AlphaFold structure prediction.",
-          "Developed Google Colab pipelines for distance metrics and sequence similarity using R, Python, and Biopython.",
-          "Gained hands-on HPC experience by connecting via SSH to supercomputing clusters for genomic computations."
-        ] 
-      },
-      { 
-        title: "Dr. Bharathi Diagnostic Centre", 
-        sub: "Summer Intern (June 2024)", 
-        details: [
-          "Operated diagnostic instruments: CBC machine, Biochemistry analyser, Hormone analyser (CLEA), Urine analyser.",
-          "Conducted CRP, HBA1C, RF factor, and ASO tests using nephelometry.",
-          "Learned laboratory quality control and diagnostic workflow management."
-        ] 
-      }
-    ],
-    projects: [
-      { 
-        title: "AChE Inhibitors Discovery", 
-        sub: "Python, ML, Bioinformatics", 
-        details: [
-          "Preprocessed 1,200+ ChEMBL records into molecular descriptors using RDKit.",
-          "Developed QSAR regression models (Random Forest, XGBoost) achieving R² of 0.82 in predicting pIC50 values.",
-          "Benchmarked multiple algorithms with 5-fold cross validation for in-silico validation."
-        ] 
-      },
-      { 
-        title: "E. coli Pathogenomics", 
-        sub: "Bioinformatics, R", 
-        details: [
-          "Analyzed pathogenic strains (O157:H7 & EHEC 0104:H4) using BLAST+ against reference genomes.",
-          "Extracted and annotated 450+ ORFs linked to virulence factors.",
-          "Visualized gene distribution and similarity scores in R for genomic interpretability."
-        ] 
-      },
-      { 
-        title: "Breast Cancer Classification", 
-        sub: "Python, ML", 
-        details: [
-          "Built logistic regression classifier on Wisconsin Breast Cancer dataset (569 samples, 30 features).",
-          "Achieved 96.7% accuracy with stratified k-fold cross validation and ROC-AUC of 0.98."
-        ] 
-      },
-      { 
-        title: "Prototype FAT", 
-        sub: "AI, Quantum, NLP, Trust-XAI", 
-        details: [
-          "Co-developed Fast, Accurate, Trustworthy prototype for drug discovery.",
-          "Implemented hybrid pipeline using NLP for data preprocessing and Qiskit-based VDE quantum algorithms.",
-          "Incorporated Trust-XAI methods for transparency in pharmacological predictions."
-        ] 
-      }
-    ],
-    publication: [
-      { 
-        title: "Bacteriophage mitigated infection silently in Ganges water", 
-        sub: "Mass Gathering Medicine, 2025 (DOI: 10.1016/j.mgmed.2025.100024)", 
-        details: [
-          "Authors: Trishna Anand, Suhys Thunga, Dijendra Nath Roy.",
-          "Focus: Ganges water during Maha Kumbh Mela 2025 in Prayagraj.",
-          "Personal Contribution: Data curation and methodology."
-        ] 
-      }
-    ],
-    skills: [
-      { title: "Programming", sub: "Core Dev", details: ["Python", "R", "C++", "Bash", "SQL"] },
-      { title: "Bioinformatics", sub: "Toolkit", details: ["BLAST", "AlphaFold", "Seurat", "CLUSTAL W", "InterProScan", "Biopython"] },
-      { title: "HPC & Systems", sub: "Environment", details: ["Linux (Arch, Ubuntu, Fedora)", "Git / SSH", "HPC clusters", "Docker"] },
-      { title: "Laboratory", sub: "Wet Lab", details: ["PCR", "Gel Electrophoresis", "ELISA", "Spectrophotometry", "Diagnostics (CBC, Hormone Analysis)"] },
-      { title: "Visuals & Design", sub: "Visualization", details: ["Matplotlib", "R (ggplot2)", "Canva", "PowerPoint"] }
-    ],
-    achievements: [
-      { title: "Certifications", sub: "Specializations", details: ["UCSD: Finding Hidden Messages in DNA", "Udemy: Learn Bioinformatics From Scratch", "Google: Foundations of Cybersecurity"] },
-      { title: "Awards", sub: "Competitions", details: ["1st Prize: AI in Drug Discovery Workshop (NITRR)", "1st Prize: ElevateX Quiz (I-Cell NITRR)", "Medal: Chess Competition (National Sports Day)", "District Medal: Spell Bee (Joint Collector)", "3rd Prize: Quiz by IITTM Nellore"] }
-    ]
-  };
-
-  const genes = [
-    { id: 'experience', label: 'EXPERIENCE_SEQ', icon: <Database />, color: 'from-pink-500' },
-    { id: 'projects', label: 'PROJECTS_SEQ', icon: <Zap />, color: 'from-blue-500' },
-    { id: 'publication', label: 'PUBLICATION_SEQ', icon: <BookOpen />, color: 'from-indigo-500' },
-    { id: 'skills', label: 'SKILLS_SEQ', icon: <Binary />, color: 'from-green-500' },
-    { id: 'achievements', label: 'AWARDS_SEQ', icon: <Award />, color: 'from-purple-500' }
-  ];
-
-  return (
-    <div className="min-h-screen bg-[#020205] text-slate-200 font-sans selection:bg-pink-500/30 overflow-x-hidden cursor-none">
-      <BioCursor />
-      <BackgroundHelix />
-      
-      <div className="max-w-7xl mx-auto px-6 py-12 relative z-20">
-        <header className="flex flex-col md:flex-row justify-between items-start gap-12 mb-24">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Fingerprint className="text-pink-500 animate-pulse w-5 h-5" />
-              <span className="text-[10px] font-mono tracking-[0.4em] text-pink-500 uppercase italic">NIT RAIPUR // BIOTECHNOLOGY // CGPA: 9.09</span>
-            </div>
-            <h1 className="text-7xl md:text-9xl font-black tracking-tighter text-white leading-[0.85] italic">
-              THUNGA <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">SUHYS</span>
-            </h1>
-            <p className="text-lg text-slate-400 max-w-lg font-light mt-6">
-              Engineering the intersection of <span className="text-white">Genomic Data</span> and <span className="text-white">Quantum-AI</span>. 
-              Bioinformatics Researcher & Full-Stack Bio-Engineer.
-            </p>
-            <div className="flex gap-6 pt-4">
-              <a href="https://linkedin.com/in/suhys-thunga" target="_blank" className="hover:text-pink-500 transition-all hover:scale-110"><Linkedin size={22}/></a>
-              <a href="https://github.com/suhys18" target="_blank" className="hover:text-blue-500 transition-all hover:scale-110"><Github size={22}/></a>
-              <a href="mailto:tsuhys067.btech2022@bt.nitrr.ac.in" className="hover:text-green-500 transition-all hover:scale-110"><Mail size={22}/></a>
-            </div>
-          </div>
-
-          <div className="w-full md:w-80 p-6 bg-black/40 border border-white/5 rounded-3xl backdrop-blur-xl shadow-2xl">
-            <div className="flex items-center gap-2 mb-4 border-b border-white/10 pb-2">
-              <div className="w-2 h-2 rounded-full bg-red-500" />
-              <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">Helix_OS // v.4.0.1</span>
-            </div>
-            <div className="font-mono text-[10px] space-y-2 text-green-400/80">
-              {terminalLines.map((line, i) => (
-                <div key={i}>{`> ${line}`}</div>
-              ))}
-              <div className="animate-pulse">_</div>
-            </div>
-          </div>
-        </header>
-
-        <div className="relative flex flex-col items-center justify-center min-h-[60vh] gap-12">
-          {genes.map((gene, i) => (
-            <button
-              key={gene.id}
-              onClick={() => setActiveGene(gene.id)}
-              className="group relative flex items-center justify-center w-full max-w-2xl py-8 transition-all duration-500"
-            >
-              <div className={`absolute h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:via-white/40 transition-all`} />
-              <div className={`relative z-10 px-8 py-4 bg-black border border-white/10 rounded-full flex items-center gap-6 group-hover:border-white/50 group-hover:scale-110 transition-all shadow-2xl overflow-hidden`}>
-                <div className={`absolute inset-0 bg-gradient-to-r ${gene.color} to-transparent opacity-0 group-hover:opacity-10 transition-opacity`} />
-                <div className="text-white/40 group-hover:text-white transition-colors">
-                  {React.cloneElement(gene.icon, { size: 24 })}
-                </div>
-                <span className="text-xs font-mono tracking-[0.5em] text-slate-500 group-hover:text-white transition-colors">{gene.label}</span>
-                <ChevronRight className="w-4 h-4 text-slate-700 group-hover:text-pink-500 group-hover:translate-x-2 transition-all" />
-              </div>
-              <span className="absolute right-0 text-[100px] font-black text-white/[0.02] pointer-events-none select-none italic tracking-tighter group-hover:text-white/[0.05] transition-all">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {activeGene && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-12 animate-in fade-in zoom-in duration-300">
-            <div className="absolute inset-0 bg-black/95 backdrop-blur-2xl" onClick={() => setActiveGene(null)} />
-            <div className="relative w-full max-w-5xl bg-[#030308] border border-white/10 rounded-[4rem] overflow-hidden shadow-[0_0_150px_rgba(0,0,0,1)]">
-              <div className="flex justify-between items-start p-10 md:p-16">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-12 h-[2px] bg-pink-500" />
-                    <span className="text-[10px] font-mono text-pink-500 tracking-[0.5em] uppercase">SEQ_MODULE_{activeGene}</span>
-                  </div>
-                  <h2 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter italic">{activeGene}</h2>
-                </div>
-                <button onClick={() => setActiveGene(null)} className="p-6 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all group">
-                  <X size={32} className="group-hover:rotate-90 transition-transform" />
-                </button>
-              </div>
-
-              <div className="px-10 md:px-16 pb-16 grid grid-cols-1 md:grid-cols-2 gap-10 max-h-[50vh] overflow-y-auto custom-scrollbar">
-                {data[activeGene].map((item, i) => (
-                  <div key={i} className="group p-10 rounded-[3rem] bg-white/[0.02] border border-white/5 hover:border-white/20 transition-all relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-8">
-                       <Maximize2 className="w-4 h-4 text-white/5 group-hover:text-pink-500 transition-colors" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-white mb-2 leading-none">{item.title}</h3>
-                    <p className="text-pink-500/80 font-mono text-[11px] uppercase tracking-widest mb-8">{item.sub}</p>
-                    <ul className="space-y-4">
-                      {item.details.map((detail, j) => (
-                        <li key={j} className="flex gap-4 text-sm text-slate-400 group-hover:text-slate-200 transition-colors">
-                          <div className="w-1.5 h-1.5 rounded-full bg-pink-500/40 mt-1.5 group-hover:bg-pink-500 transition-colors" />
-                          {detail}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-              <div className="h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent animate-[pulse_2s_infinite]" />
-            </div>
-          </div>
-        )}
-
-        <footer className="mt-40 border-t border-white/5 py-12 flex flex-col md:flex-row justify-between items-center text-[10px] font-mono tracking-[0.5em] text-slate-600 uppercase">
-          <div className="flex gap-12">
-            <span>Bio_Build: 4.0.9</span>
-            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> Seq_Stable</span>
-          </div>
-          <div className="flex flex-col md:items-end">
-            <span>NIT Raipur // B.Tech Biotechnology</span>
-            <span className="mt-1">© {new Date().getFullYear()} Thunga Suhys</span>
-          </div>
-        </footer>
-      </div>
-
-      <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(236, 72, 153, 0.2); }
-      `}</style>
-    </div>
-  );
-};
 
-export default App;
+        @keyframes pulse-scan {
+            0% { opacity: 0.1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 0.1; }
+        }
+
+        /* Prevent layout shift on load */
+        #root {
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, Fragment } = React;
+        
+        // Correct global for Lucide React in UMD bundle
+        const { 
+            Database, Cpu, Terminal, Github, Linkedin, Mail, 
+            ShieldCheck, Zap, FlaskConical, Binary, X, 
+            ChevronRight, Maximize2, Dna, Fingerprint, 
+            Award, BookOpen 
+        } = LucideReact;
+
+        // --- Custom Cursor Component ---
+        const BioCursor = () => {
+            const [position, setPosition] = useState({ x: 0, y: 0 });
+            const [isHovering, setIsHovering] = useState(false);
+
+            useEffect(() => {
+                const updateCursor = (e) => {
+                    setPosition({ x: e.clientX, y: e.clientY });
+                };
+                const handleOver = (e) => {
+                    if (e.target.closest('button') || e.target.closest('a')) setIsHovering(true);
+                    else setIsHovering(false);
+                };
+                window.addEventListener('mousemove', updateCursor);
+                window.addEventListener('mouseover', handleOver);
+                return () => {
+                    window.removeEventListener('mousemove', updateCursor);
+                    window.removeEventListener('mouseover', handleOver);
+                };
+            }, []);
+
+            return (
+                <div 
+                    className="fixed pointer-events-none z-[9999] transition-transform duration-200 ease-out flex items-center justify-center hidden md:flex"
+                    style={{ left: position.x, top: position.y, transform: `translate(-50%, -50%) scale(${isHovering ? 1.5 : 1})` }}
+                >
+                    <div className={`w-8 h-8 border-2 rounded-full flex items-center justify-center transition-colors duration-300 ${isHovering ? 'border-pink-500 bg-pink-500/10' : 'border-white/20'}`}>
+                        <div className={`w-1 h-1 rounded-full ${isHovering ? 'bg-pink-500' : 'bg-white/40'}`} />
+                    </div>
+                    <div className={`absolute w-12 h-12 border-t-2 border-l-2 rounded-tl-xl transition-all duration-300 ${isHovering ? 'border-green-500 -translate-x-2 -translate-y-2' : 'border-transparent'}`} />
+                </div>
+            );
+        };
+
+        // --- Animated 3D DNA Helix Component ---
+        const BackgroundHelix = () => {
+            const [nodes, setNodes] = useState([]);
+            const [time, setTime] = useState(0);
+
+            useEffect(() => {
+                const newNodes = Array.from({ length: 40 }).map((_, i) => ({
+                    id: i,
+                    phase: (i * 0.5),
+                    y: i * 4,
+                }));
+                setNodes(newNodes);
+
+                let animationFrameId;
+                const animate = () => {
+                    setTime(prev => prev + 0.02);
+                    animationFrameId = requestAnimationFrame(animate);
+                };
+                animate();
+                return () => cancelAnimationFrame(animationFrameId);
+            }, []);
+
+            return (
+                <div className="fixed inset-0 pointer-events-none opacity-20 z-0 flex justify-center overflow-hidden">
+                    <div className="relative w-64 h-full">
+                        {nodes.map((node) => (
+                            <Fragment key={node.id}>
+                                <div 
+                                    className="absolute w-2 h-2 rounded-full bg-pink-500 shadow-[0_0_10px_#ec4899]"
+                                    style={{ 
+                                        top: `${node.y}%`, 
+                                        left: `${50 + Math.sin(node.phase + time) * 40}%`,
+                                        opacity: (Math.cos(node.phase + time) + 1) / 2
+                                    }}
+                                />
+                                <div 
+                                    className="absolute w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"
+                                    style={{ 
+                                        top: `${node.y}%`, 
+                                        left: `${50 - Math.sin(node.phase + time) * 40}%`,
+                                        opacity: (Math.sin(node.phase + time) + 1) / 2
+                                    }}
+                                />
+                                <div 
+                                    className="absolute h-px bg-white/10"
+                                    style={{ 
+                                        top: `${node.y + 0.5}%`,
+                                        left: `${50 - Math.sin(node.phase + time) * 40}%`,
+                                        width: `${Math.abs(Math.sin(node.phase + time) * 80)}%`
+                                    }}
+                                />
+                            </Fragment>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [activeGene, setActiveGene] = useState(null);
+            const [terminalLines, setTerminalLines] = useState([]);
+
+            useEffect(() => {
+                const lines = [
+                    "SEQ_BOOT: SUCCESS",
+                    "NIT_RAIPUR: B.TECH BIOTECH",
+                    "CORE_CGPA: 9.09",
+                    "HPC_NODE: IIT_ROORKEE_LINKED",
+                    "PUB_SYNC: MASS_GATHERING_MED_2025"
+                ];
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i < lines.length) {
+                        setTerminalLines(prev => [...prev, lines[i]]);
+                        i++;
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 400);
+                return () => clearInterval(interval);
+            }, []);
+
+            const resumeData = {
+                experience: [
+                    { 
+                        title: "IIT Roorkee", 
+                        sub: "Summer Research Intern (May 2025 - June 2025)", 
+                        details: [
+                            "Bioinformatics analyses: BLAST, single-cell RNA-seq (Seurat), AlphaFold protein structure prediction.",
+                            "Developed Google Colab pipelines using R, Python, and Biopython for sequence similarity workflows.",
+                            "Supercomputing experience connecting via SSH to HPC clusters for genomic computations."
+                        ] 
+                    },
+                    { 
+                        title: "Dr. Bharathi Diagnostic Centre", 
+                        sub: "Summer Intern (June 2024)", 
+                        details: [
+                            "Operated diagnostic instruments: CBC machine, Biochemistry analyser, Hormone analyser (CLEA).",
+                            "Conducted CRP, HBA1C, RF factor, and ASO tests using nephelometry.",
+                            "Laboratory quality control and diagnostic workflow management."
+                        ] 
+                    }
+                ],
+                projects: [
+                    { 
+                        title: "AChE Inhibitors Discovery", 
+                        sub: "Python, ML, Bioinformatics", 
+                        details: [
+                            "Processed 1,200+ ChEMBL records using RDKit; built QSAR regression models (RF, XGBoost).",
+                            "Achieved R² of 0.82 in predicting pIC50 values for molecular descriptors.",
+                            "Benchmarked multiple algorithms with 5-fold cross validation for in-silico validation."
+                        ] 
+                    },
+                    { 
+                        title: "E. coli Pathogenomics", 
+                        sub: "Bioinformatics, R", 
+                        details: [
+                            "Analyzed strains O157:H7 & EHEC 0104:H4 using BLAST+ against reference genomes.",
+                            "Annotated 450+ ORFs linked to virulence factors.",
+                            "Visualized gene distribution and similarity scores in R for interpretability."
+                        ] 
+                    },
+                    { 
+                        title: "Breast Cancer Classification", 
+                        sub: "Python, ML", 
+                        details: [
+                            "Logistic regression classifier on Wisconsin dataset (569 samples, 30 features).",
+                            "96.7% accuracy with stratified k-fold cross validation and ROC-AUC of 0.98."
+                        ] 
+                    },
+                    { 
+                        title: "Prototype FAT", 
+                        sub: "AI, Quantum, NLP, Trust-XAI", 
+                        details: [
+                            "Co-developed Fast, Accurate, Trustworthy prototype using NLP for molecular data preprocessing.",
+                            "Integrated Qiskit-based VDE quantum algorithms for pharmacological predictions.",
+                            "Implemented Trust-XAI methods for transparency in drug discovery pipelines."
+                        ] 
+                    }
+                ],
+                publication: [
+                    { 
+                        title: "Bacteriophage infection in Ganges water", 
+                        sub: "Mass Gathering Medicine, 2025 (DOI: 10.1016/j.mgmed.2025.100024)", 
+                        details: [
+                            "Research on Maha Kumbh Mela 2025 silently mitigated infection via bacteriophages.",
+                            "Authors: Trishna Anand, Suhys Thunga, Dijendra Nath Roy.",
+                            "Contribution: Data curation and methodology."
+                        ] 
+                    }
+                ],
+                skills: [
+                    { title: "Languages", sub: "Core Dev", details: ["Python", "R", "C++", "Bash", "SQL"] },
+                    { title: "Bioinformatics", sub: "Toolkit", details: ["BLAST", "AlphaFold", "Seurat", "CLUSTAL W", "Biopython"] },
+                    { title: "Systems", sub: "HPC/DevOps", details: ["Linux (Arch/Fedora)", "Git/SSH", "HPC Clusters", "Docker"] },
+                    { title: "Visuals", sub: "Design", details: ["Matplotlib", "ggplot2", "Canva", "PowerPoint"] }
+                ],
+                achievements: [
+                    { title: "Certifications", sub: "Academic", details: ["UCSD: Finding Hidden Messages in DNA", "Udemy: Bioinformatics from Scratch", "Google: Foundations of Cybersecurity"] },
+                    { title: "Top Awards", sub: "Competitions", details: ["1st Prize: AI in Drug Discovery (NITRR)", "1st Prize: ElevateX Quiz", "District Medal: Spell Bee"] }
+                ]
+            };
+
+            const genes = [
+                { id: 'experience', label: 'EXPERIENCE_SEQ', icon: <Database />, color: 'from-pink-500' },
+                { id: 'projects', label: 'PROJECTS_SEQ', icon: <Zap />, color: 'from-blue-500' },
+                { id: 'publication', label: 'PUBLICATION_SEQ', icon: <BookOpen />, color: 'from-indigo-500' },
+                { id: 'skills', label: 'SKILLS_SEQ', icon: <Binary />, color: 'from-green-500' },
+                { id: 'achievements', label: 'AWARDS_SEQ', icon: <Award />, color: 'from-purple-500' }
+            ];
+
+            return (
+                <div className="min-h-screen relative overflow-hidden bg-[#020205]">
+                    <BioCursor />
+                    <BackgroundHelix />
+                    
+                    <div className="max-w-7xl mx-auto px-6 py-12 relative z-20">
+                        {/* Header */}
+                        <header className="flex flex-col md:flex-row justify-between items-start gap-12 mb-24">
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <Fingerprint className="text-pink-500 animate-pulse w-5 h-5" />
+                                    <span className="text-[10px] font-mono tracking-[0.4em] text-pink-500 uppercase italic">NIT RAIPUR // BIOTECHNOLOGY // CGPA: 9.09</span>
+                                </div>
+                                <h1 className="text-7xl md:text-9xl font-black tracking-tighter text-white leading-[0.85] italic">
+                                    THUNGA <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">SUHYS</span>
+                                </h1>
+                                <p className="text-lg text-slate-400 max-w-lg font-light mt-6">
+                                    Engineering the intersection of <span className="text-white">Genomic Data</span> and <span className="text-white">Quantum-AI</span>. 
+                                    Bioinformatics Researcher & Full-Stack Bio-Engineer.
+                                </p>
+                                <div className="flex gap-6 pt-4">
+                                    <a href="https://linkedin.com/in/suhys-thunga" target="_blank" className="hover:text-pink-500 transition-all hover:scale-110"><Linkedin size={22}/></a>
+                                    <a href="https://github.com/suhys18" target="_blank" className="hover:text-blue-500 transition-all hover:scale-110"><Github size={22}/></a>
+                                    <a href="mailto:tsuhys067.btech2022@bt.nitrr.ac.in" className="hover:text-green-500 transition-all hover:scale-110"><Mail size={22}/></a>
+                                </div>
+                            </div>
+
+                            <div className="w-full md:w-80 p-6 bg-black/40 border border-white/5 rounded-3xl backdrop-blur-xl shadow-2xl">
+                                <div className="flex items-center gap-2 mb-4 border-b border-white/10 pb-2">
+                                    <div className="w-2 h-2 rounded-full bg-red-500" />
+                                    <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest text-white">Helix_OS // v.4.0.1</span>
+                                </div>
+                                <div className="font-mono text-[10px] space-y-2 text-green-400/80">
+                                    {terminalLines.map((line, i) => (
+                                        <div key={i}>{`> ${line}`}</div>
+                                    ))}
+                                    <div className="animate-pulse">_</div>
+                                </div>
+                            </div>
+                        </header>
+
+                        {/* Navigation Helix Axis */}
+                        <div className="relative flex flex-col items-center justify-center min-h-[60vh] gap-12">
+                            {genes.map((gene, i) => (
+                                <button
+                                    key={gene.id}
+                                    onClick={() => setActiveGene(gene.id)}
+                                    className="group relative flex items-center justify-center w-full max-w-2xl py-8 transition-all duration-500"
+                                >
+                                    <div className={`absolute h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:via-white/40 transition-all`} />
+                                    <div className={`relative z-10 px-8 py-4 bg-black border border-white/10 rounded-full flex items-center gap-6 group-hover:border-white/50 group-hover:scale-110 transition-all shadow-2xl overflow-hidden`}>
+                                        <div className={`absolute inset-0 bg-gradient-to-r ${gene.color} to-transparent opacity-0 group-hover:opacity-10 transition-opacity`} />
+                                        <div className="text-white/40 group-hover:text-white transition-colors">
+                                            {gene.icon}
+                                        </div>
+                                        <span className="text-xs font-mono tracking-[0.5em] text-slate-500 group-hover:text-white transition-colors uppercase">{gene.label}</span>
+                                        <ChevronRight className="w-4 h-4 text-slate-700 group-hover:text-pink-500 group-hover:translate-x-2 transition-all" />
+                                    </div>
+                                    <span className="absolute right-0 text-[100px] font-black text-white/[0.02] pointer-events-none select-none italic tracking-tighter group-hover:text-white/[0.05] transition-all">
+                                        {String(i + 1).padStart(2, '0')}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Pop-out Modal */}
+                        {activeGene && (
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-12">
+                                <div className="absolute inset-0 bg-black/95 backdrop-blur-2xl transition-opacity animate-in fade-in" onClick={() => setActiveGene(null)} />
+                                <div className="relative w-full max-w-5xl bg-[#030308] border border-white/10 rounded-[4rem] overflow-hidden shadow-[0_0_150px_rgba(0,0,0,1)] animate-in zoom-in duration-300">
+                                    <div className="flex justify-between items-start p-10 md:p-16">
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <div className="w-12 h-[2px] bg-pink-500" />
+                                                <span className="text-[10px] font-mono text-pink-500 tracking-[0.5em] uppercase">SEQ_MODULE_{activeGene}</span>
+                                            </div>
+                                            <h2 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter italic">{activeGene}</h2>
+                                        </div>
+                                        <button onClick={() => setActiveGene(null)} className="p-6 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all group">
+                                            <X size={32} className="group-hover:rotate-90 transition-transform" />
+                                        </button>
+                                    </div>
+
+                                    <div className="px-10 md:px-16 pb-16 grid grid-cols-1 md:grid-cols-2 gap-10 max-h-[50vh] overflow-y-auto custom-scrollbar">
+                                        {resumeData[activeGene].map((item, i) => (
+                                            <div key={i} className="group p-10 rounded-[3rem] bg-white/[0.02] border border-white/5 hover:border-white/20 transition-all relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 p-8">
+                                                    <Maximize2 className="w-4 h-4 text-white/5 group-hover:text-pink-500 transition-colors" />
+                                                </div>
+                                                <h3 className="text-2xl font-bold text-white mb-2 leading-none">{item.title}</h3>
+                                                <p className="text-pink-500/80 font-mono text-[11px] uppercase tracking-widest mb-8">{item.sub}</p>
+                                                <ul className="space-y-4">
+                                                    {item.details.map((detail, j) => (
+                                                        <li key={j} className="flex gap-4 text-sm text-slate-400 group-hover:text-slate-200 transition-colors">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-pink-500/40 mt-1.5 group-hover:bg-pink-500 transition-colors" />
+                                                            {detail}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent animate-[pulse_2s_infinite]" />
+                                </div>
+                            </div>
+                        )}
+
+                        <footer className="mt-40 border-t border-white/5 py-12 flex flex-col md:flex-row justify-between items-center text-[10px] font-mono tracking-[0.5em] text-slate-600 uppercase">
+                            <div className="flex gap-12">
+                                <span>Bio_Build: 4.0.9</span>
+                                <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> Seq_Stable</span>
+                            </div>
+                            <div className="flex flex-col md:items-end">
+                                <span>NIT Raipur // B.Tech Biotechnology</span>
+                                <span className="mt-1">© {new Date().getFullYear()} Thunga Suhys</span>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
