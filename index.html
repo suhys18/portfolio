@@ -6,10 +6,10 @@
     <title>Thunga Suhys | Helix Portfolio</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React and Babel -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- React and Babel from cdnjs (More reliable for GitHub Pages) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js" crossorigin></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
@@ -36,12 +36,24 @@
             100% { transform: translateY(0px) rotate(0deg); }
         }
 
-        .gene-node {
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Loading indicator for slow script loads */
+        #loader {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #020205;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
         }
     </style>
 </head>
 <body>
+    <div id="loader">
+        <div class="text-pink-500 font-mono text-xs animate-pulse tracking-[0.5em]">INITIALIZING_HELIX_CORE...</div>
+    </div>
+    
     <div id="root"></div>
 
     <script type="text/babel">
@@ -143,6 +155,11 @@
             const [terminal, setTerminal] = useState([]);
 
             useEffect(() => {
+                // Remove loader when app mounts
+                const loader = document.getElementById('loader');
+                if (loader) loader.style.opacity = '0';
+                setTimeout(() => loader && loader.remove(), 500);
+
                 const lines = ["SEQ_BOOT: SUCCESS", "NIT_RAIPUR: B.TECH BIOTECH", "CORE_CGPA: 9.09", "PUB_SYNC: MASS_GATHERING_MED_2025"];
                 let i = 0;
                 const interval = setInterval(() => {
@@ -271,7 +288,14 @@
             );
         };
 
-        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+        // Standard React 18 initialization check
+        window.onload = () => {
+            const container = document.getElementById('root');
+            if (container) {
+                const root = ReactDOM.createRoot(container);
+                root.render(<App />);
+            }
+        };
     </script>
 </body>
 </html>
